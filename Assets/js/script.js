@@ -20,20 +20,22 @@ let workDay = [
     { time: "5PM", event: ""}
 ];
 
-function checkStorage(){
-    workDay = JSON.parse(localStorage.getItem("Work_Day"));
-}
 //Recall events from local storage!!!
+storedWorkDay = JSON.parse(localStorage.getItem("Work_Day"));
+
+if (storedWorkDay) {
+    workDay = storedWorkDay;
+}
 
 function setColor(time){
     let current = moment().format("HA");
     let currentTime = moment(current, "HA");
     let selectedTime = moment(time, "HA");
 
-    if (currentTime.isBefore(selectedTime) === true) {
+    if (currentTime.isBefore(selectedTime)) {
         //console.log(currentTime + " vs " selectedTime);
         return "future";
-    } else if (currentTime.isAfter(selectedTime) === true) {
+    } else if (currentTime.isAfter(selectedTime)) {
         //console.log("Grey");
         return "past";
     } else {
@@ -63,20 +65,13 @@ workDay.forEach(function(workDay, index){
 });
 
 $(".saveBtn").on("click", function(){
-    localStorage.setItem("Work_Day", JSON.stringify(workDay));
+    let eventId = parseInt($(this).closest(".time-block").attr("id"));
+    let newEvent = $.trim($(this).parent().siblings("textarea").val());    
 
+    workDay[eventId].event = newEvent;
+
+    localStorage.setItem("Work_Day", JSON.stringify(workDay));
 })
 
-
-
-
-
-
-
-
-
-
-
 currentDayEl.text(moment().format("dddd, MMMM Do"));
-
 
