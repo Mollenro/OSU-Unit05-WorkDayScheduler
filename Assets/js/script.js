@@ -7,7 +7,6 @@
 
 let containerEl = $("#container");
 let currentDayEl = $("#currentDay");
-let saveBtn = $("<button>");
 
 let workDay = [
     { time: "9AM", event: ""},
@@ -27,49 +26,44 @@ function checkStorage(){
 //Recall events from local storage!!!
 
 function setColor(time){
-    let current = moment();
-
+    let current = moment().format("HA");
     let currentTime = moment(current, "HA");
     let selectedTime = moment(time, "HA");
+
     if (currentTime.isBefore(selectedTime) === true) {
-        //console.log("Green");
-        return "Green";
+        //console.log(currentTime + " vs " selectedTime);
+        return "future";
     } else if (currentTime.isAfter(selectedTime) === true) {
         //console.log("Grey");
-        return "Grey";
+        return "past";
     } else {
-        //console.log("Red");
-        return "Red";
+        console.log("Red");
+        return "present";
     }
 }
 
-function displayTimeBlocks() {
-    workDay.forEach(function(workDay){
-        let timeBlockEl = $("<div>");
-        let hourEl = $("<div>");
-        let eventBox = $("<textarea>");
+workDay.forEach(function(workDay, index){
+    let timeBlockEl = $("<div class='row time-block'>");
+    let row = $("<div class='row no-gutters input-group'>")
+    let hourEl = $("<div class='col-sm col-lg-1 input-group-prepend hour justify-content-sm-end pr-3 pt-3'>");
+    let eventBox = $("<textarea>");
+    let saveBtn = $("<div class='col-sm col-lg-1 input-group-append'><button class='saveBtn btn-block' type='submit'><i class='fas fa-save'></i></button></div>")    
         
-        
-        hourEl.text(workDay.time);
-        //console.log(hourEl.text());
-        //console.log(workDay.event);
-        eventBox.text(workDay.event);
-        eventBox.attr("class", setColor(workDay.time));
-        saveBtn.text("Save");
+    hourEl.text(workDay.time);
+    eventBox.text(workDay.event);
+    eventBox.attr("class", "form-control " + setColor(workDay.time));
 
-        timeBlockEl.append(hourEl);
-        timeBlockEl.append(eventBox);
-        timeBlockEl.append(saveBtn);
+    timeBlockEl.attr("id", index);
+    row.append(hourEl);
+    row.append(eventBox);
+    row.append(saveBtn);
+    
+    timeBlockEl.append(row);
+    containerEl.append(timeBlockEl);
+});
 
-        containerEl.append(timeBlockEl);
-        containerEl.append("<p>Test</p>");
-        //console.log(timeBlockEl);
-    });
-}
-
-saveBtn.on("click", function(){
+$(".saveBtn").on("click", function(){
     localStorage.setItem("Work_Day", JSON.stringify(workDay));
-
 
 })
 
@@ -85,5 +79,4 @@ saveBtn.on("click", function(){
 
 currentDayEl.text(moment().format("dddd, MMMM Do"));
 
-displayTimeBlocks();
 
